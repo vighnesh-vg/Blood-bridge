@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Blood Bank Dashboard</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure the body takes full height of the viewport */
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #ff4d4d;
+        }
+
+        #bank-details {
+            background-color: #fff;
+            padding: 20px;
+            margin: 20px auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 80%;
+        }
+
+        #bank-details h2 {
+            color: #ff4d4d;
+            text-align: center;
+        }
+
+        #bank-details p {
+            font-size: 16px;
+            color: #555;
+        }
+
+        a {
+            display: block;
+            width: 200px;
+            text-align: center;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #ff4d4d;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        a:hover {
+            background-color: #e04343;
+        }
+
+        /* Header and Footer Styles */
+        header {
+            background-color: #ff4d4d; /* Red header */
+            color: white;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center; /* Center content */
+            align-items: center;
+            margin-bottom: 20px; /* Space below header */
+        }
+        
+        header h1{
+            color:white;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-img {
+            width: 70px;  /* Corrected logo size to match login/signup */
+            height: auto;
+            margin-right: 10px; /* Space to the right of the logo */
+        }
+
+        .logo-container h1 {
+            color: white;  /* Changed text color to white */
+            font-size: 28px; /* Corrected text size to match login/signup */
+            margin: 0;
+        }
+
+        footer {
+            background-color: #ff4d4d; /* Red footer */
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 14px;
+            margin-top: auto; /* Push footer to the bottom */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="/static/images/logo.png" alt="Blood Bank Logo" class="logo-img">
+        </div>
+        <div class="htext">
+            <h1>Blood Bridge</h1>
+        </div>
+    </header>
+    <h1>Blood Bank Dashboard</h1>
+    <div id="bank-details">
+        <h2>Details</h2>
+        <p>Name: {{ bank_name if bank_name else 'N/A' }}</p>
+        <p>ID: {{ bank_id if bank_id else 'N/A' }}</p>
+        <p>Address: {{ address if address else 'N/A' }}</p>
+        <p>License Number: {{ license_number if license_number else 'N/A' }}</p>
+    </div>
+    <a href="/inventory">Go to Inventory</a>
+    <footer>
+        <p>&copy; 2024 Blood Bank. All rights reserved.</p>
+    </footer>
+</body>
+</html>

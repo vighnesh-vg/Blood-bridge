@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventory Management</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh; /* Ensure the body takes full height of the viewport */
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #ff4d4d;
+        }
+
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #ff4d4d;
+            color: white;
+            font-size: 16px;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+
+        input[type="number"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            width: 120px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 8px 16px;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        button:hover {
+            background-color: #e04343;
+        }
+
+        form {
+            display: inline-block;
+            margin: 0 5px;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .action-buttons form {
+            margin: 0 10px;
+        }
+
+        .no-data {
+            text-align: center;
+            color: #888;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+
+        /* Header and Footer Styles */
+        header {
+            background-color: #ff4d4d; /* Red header */
+            color: white;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center; /* Center content */
+            align-items: center;
+            margin-bottom: 20px; /* Space below header */
+        }
+
+        header h1{
+            color:white;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-img {
+            width: 70px;  /* Corrected logo size to match login/signup */
+            height: auto;
+            margin-right: 10px; /* Space to the right of the logo */
+        }
+
+        .logo-container h1 {
+            color: white;  /* Changed text color to white */
+            font-size: 28px; /* Corrected text size to match login/signup */
+            margin: 0;
+        }
+
+        footer {
+            background-color: #ff4d4d; /* Red footer */
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 14px;
+            margin-top: auto; /* Push footer to the bottom */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="/static/images/logo.png" alt="Blood Bank Logo" class="logo-img">
+        </div>
+        <div class="htext">
+            <h1>Blood Bridge</h1>
+        </div>
+    </header>
+    <h1>Blood Bank Inventory</h1>
+    <table border="1">
+        <tr>
+            <th>Blood Type</th>
+            <th>Units Available</th>
+            <th>Update Quantity</th>
+            
+        </tr>
+        {% for row in inventory %}
+        <tr>
+            <td>{{ row['blood_type'] }}</td>
+            <td>{{ row['number_of_units'] }}</td>
+            <td>
+                <form method="POST" action="/update_inventory/{{ bloodbank_id }}">
+                    <input type="hidden" name="blood_type" value="{{ row['blood_type'] }}">
+                    <input type="number" name="units" placeholder="Enter units" required>
+                    <button type="submit">Add</button>
+                </form>
+                <form method="POST" action="/delete_inventory/{{ bloodbank_id }}">
+                    <input type="hidden" name="blood_type" value="{{ row['blood_type'] }}">
+                    <input type="number" name="units" placeholder="Enter units to remove" required>
+                    <button type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    <footer>
+        <p>&copy; 2024 Blood Bank. All rights reserved.</p>
+    </footer>
+</body>
+</html>

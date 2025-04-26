@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Admin Panel</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <h1>Pending Accounts</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>License Number</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for account in pending_accounts %}
+            <tr>
+                <td>{{ account.id }}</td>
+                <td>{{ account.name }}</td>
+                <td>{{ account.email }}</td>
+                <td>{{ account.address }}</td>
+                <td>{{ account.license_number }}</td>
+                <td>
+                    <form method="POST" action="/verify/{{ account.id }}">
+                        <button type="submit">Verify</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
