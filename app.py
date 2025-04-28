@@ -1,9 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask_cors import CORS
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
 
 app = Flask(__name__)
+CORS(app)
 app.secret_key = os.getenv('SECRET_KEY', os.urandom(24))
 
 def get_db_connection():
