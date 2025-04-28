@@ -16,12 +16,26 @@ def get_db_connection():
 @app.route('/')
 def index():
     return redirect(url_for('login'))
+import requests  # add this import at the top if not already present
+
+# Your Google Maps Geocoding API Key
+GOOGLE_API_KEY = 'AIzaSyBhiP9yN50DLvUGoU9_q3XDEh_YvzOSHKk'  # 🔥 Replace with your actual API key
+
+def get_lat_lng_from_address(address):
+    """Use Google Geocoding API to fetch lat/lng for a given address."""
+    url = f"https://maps.googleapis.com/maps/api/geocode/json?address={address}&key={GOOGLE_API_KEY}"
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()
+        if data['results']:
+            location = data['results'][0]['geometry']['location']
+            return location['lat'], location['lng']
+    return None, None  # fallback if something fails
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
         data = request.form
-        # Log form data
         app.logger.info(f"Received form data: {data}")
         
         try:
@@ -30,17 +44,27 @@ def signup():
             address = data['address']
             license_number = data['license_number']
             password = data['password']
+            latitude = data['latitude']
+            longitude = data['longitude']
+
+            if not latitude or not longitude:
+                app.logger.error(f"Latitude/Longitude missing for address: {address}")
+                flash("Please select a valid address from suggestions.", "danger")
+                return render_template('signup.html')
 
             password_hash = generate_password_hash(password)
 
             conn = get_db_connection()
-            conn.execute('INSERT INTO pending_accounts (name, email, address, license_number, password) VALUES (?, ?, ?, ?, ?)',
-                         (name, email, address, license_number, password_hash))
+            conn.execute('''
+                INSERT INTO pending_accounts (name, email, address, latitude, longitude, license_number, password)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (name, email, address, latitude, longitude, license_number, password_hash))
             conn.commit()
             conn.close()
 
             flash("Signup successful! Await verification.", "success")
             return redirect(url_for('login'))
+
         except KeyError as e:
             app.logger.error(f"Missing key in form data: {e}")
             flash("Form submission error. Please fill in all required fields.", "danger")
@@ -111,33 +135,32 @@ def verify_account(account_id):
     account = conn.execute('SELECT * FROM pending_accounts WHERE id = ?', (account_id,)).fetchone()
     
     if account:
-        # Insert account into main_table
+        # Insert account into main_table (now with lat/long)
         conn.execute(
-            'INSERT INTO main_table (name, email, address, license_number, password) VALUES (?, ?, ?, ?, ?)',
-            (account['name'], account['email'], account['address'], account['license_number'], account['password'])
+            'INSERT INTO main_table (name, email, address, latitude, longitude, license_number, password) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            (account['name'], account['email'], account['address'], account['latitude'], account['longitude'], account['license_number'], account['password'])
         )
         
-        # Get the ID of the newly created account
+        # Get ID of newly created main_table record
         new_account = conn.execute('SELECT id FROM main_table WHERE email = ?', (account['email'],)).fetchone()
         bloodbank_id = new_account['id']
         blood_bank_table_name = f'blood_bank_{bloodbank_id}'
         
-        # Create a new inventory table for the blood bank
+        # Create blood bank inventory table
         conn.execute(f'''
             CREATE TABLE {blood_bank_table_name} (
                 blood_type TEXT PRIMARY KEY,
                 number_of_units INTEGER NOT NULL DEFAULT 0
             )
         ''')
-        
-        # Initialize the inventory with all blood types
+
         blood_types = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
         conn.executemany(
             f'INSERT INTO {blood_bank_table_name} (blood_type, number_of_units) VALUES (?, ?)',
             [(blood_type, 0) for blood_type in blood_types]
         )
         
-        # Remove the account from pending_accounts
+        # Remove from pending_accounts
         conn.execute('DELETE FROM pending_accounts WHERE id = ?', (account_id,))
         conn.commit()
         flash("Account verified and inventory table created.", "success")
@@ -146,6 +169,7 @@ def verify_account(account_id):
     
     conn.close()
     return redirect(url_for('admin_panel'))
+
 
 
 @app.route('/inventory')

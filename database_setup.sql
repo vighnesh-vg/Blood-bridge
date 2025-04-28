@@ -4,7 +4,9 @@ CREATE TABLE IF NOT EXISTS pending_accounts (
     email TEXT UNIQUE NOT NULL,
     address TEXT NOT NULL,
     license_number TEXT NOT NULL,
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
+    latitude REAL,
+    longitude REAL
 );
 
 CREATE TABLE IF NOT EXISTS main_table (
@@ -13,5 +15,7 @@ CREATE TABLE IF NOT EXISTS main_table (
     email TEXT UNIQUE NOT NULL,
     address TEXT NOT NULL,
     license_number TEXT NOT NULL,
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
+    latitude REAL,
+    longitude REAL
 );

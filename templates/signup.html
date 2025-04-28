@@ -5,6 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup - Blood Bank</title>
     <link rel="stylesheet" href="/static/styles.css">
+
+    <!-- Load only Places API, no heavy Maps -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhiP9yN50DLvUGoU9_q3XDEh_YvzOSHKk&libraries=places"></script>
+
+    <script>
+      let autocomplete;
+
+      function initAutocomplete() {
+          const input = document.getElementById('address');
+          autocomplete = new google.maps.places.Autocomplete(input, {
+              types: ['geocode'],
+              componentRestrictions: { country: ['in'] }
+          });
+
+          autocomplete.addListener('place_changed', fillInAddress);
+      }
+
+      function fillInAddress() {
+          const place = autocomplete.getPlace();
+          if (place.geometry) {
+              document.getElementById('latitude').value = place.geometry.location.lat();
+              document.getElementById('longitude').value = place.geometry.location.lng();
+          }
+      }
+
+      window.onload = initAutocomplete;
+    </script>
 </head>
 <body>
     <h1>Blood Bank Signup</h1>
@@ -17,13 +44,17 @@
         <input type="email" id="email" name="email" required><br>
 
         <label for="address">Address:</label>
-        <textarea id="address" name="address" required></textarea><br>
+        <input type="text" id="address" name="address" required><br>
 
         <label for="license_number">License Number:</label>
         <input type="text" id="license_number" name="license_number" required><br>
 
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" required><br>
+
+        <!-- HIDDEN latitude and longitude fields -->
+        <input type="hidden" id="latitude" name="latitude">
+        <input type="hidden" id="longitude" name="longitude">
 
         <button type="submit">Signup</button>
     </form>
