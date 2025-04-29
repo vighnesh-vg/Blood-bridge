@@ -16,10 +16,10 @@ def get_db_connection():
 @app.route('/')
 def index():
     return redirect(url_for('login'))
-import requests  # add this import at the top if not already present
+import requests  
 
-# Your Google Maps Geocoding API Key
-GOOGLE_API_KEY = 'AIzaSyBhiP9yN50DLvUGoU9_q3XDEh_YvzOSHKk'  # 🔥 Replace with your actual API key
+
+GOOGLE_API_KEY = 'AIzaSyBhiP9yN50DLvUGoU9_q3XDEh_YvzOSHKk'  
 
 def get_lat_lng_from_address(address):
     """Use Google Geocoding API to fetch lat/lng for a given address."""
@@ -30,7 +30,7 @@ def get_lat_lng_from_address(address):
         if data['results']:
             location = data['results'][0]['geometry']['location']
             return location['lat'], location['lng']
-    return None, None  # fallback if something fails
+    return None, None 
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -135,18 +135,18 @@ def verify_account(account_id):
     account = conn.execute('SELECT * FROM pending_accounts WHERE id = ?', (account_id,)).fetchone()
     
     if account:
-        # Insert account into main_table (now with lat/long)
+        
         conn.execute(
             'INSERT INTO main_table (name, email, address, latitude, longitude, license_number, password) VALUES (?, ?, ?, ?, ?, ?, ?)',
             (account['name'], account['email'], account['address'], account['latitude'], account['longitude'], account['license_number'], account['password'])
         )
         
-        # Get ID of newly created main_table record
+        
         new_account = conn.execute('SELECT id FROM main_table WHERE email = ?', (account['email'],)).fetchone()
         bloodbank_id = new_account['id']
         blood_bank_table_name = f'blood_bank_{bloodbank_id}'
         
-        # Create blood bank inventory table
+        
         conn.execute(f'''
             CREATE TABLE {blood_bank_table_name} (
                 blood_type TEXT PRIMARY KEY,
@@ -160,7 +160,7 @@ def verify_account(account_id):
             [(blood_type, 0) for blood_type in blood_types]
         )
         
-        # Remove from pending_accounts
+        
         conn.execute('DELETE FROM pending_accounts WHERE id = ?', (account_id,))
         conn.commit()
         flash("Account verified and inventory table created.", "success")
